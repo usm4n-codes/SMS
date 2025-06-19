@@ -1,200 +1,65 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdio>
-#include <string>
-#include <iomanip>
+#include<iostream>
+#include<fstream>
+#include<sstream>
+#include<cstdio>
+#include<string>
+#include<iomanip>
+#include<cctype>
 using namespace std;
 
 class person {
 public:
     string name;
     string id;
-    virtual void view_record() = 0;
-    virtual ~person() {}
+
+    void see_student_record();
+    void see_timetable();
+    void see_attendence();
 };
 
-class admin : public person {
+class teacher : public person {
 public:
-    string subject, pass;
-    float salary;
-
-    void view_record() override;
-    void add_std();
-    void edit_std();
-    void del_std();
-    void add_tea();
-    void edit_tea();
-    void del_tea();
-    void edit_timetable();
-    void acess_admin();
-    void admin_login(string name, string pass);
+    void teacher_login(string name, string pass);
+    void acess_teacher();
+    void take_attendence();
+    void create_quiz();
 };
 
-// ───────────────────── Admin Functions ─────────────────────
+int main() {
+    person p;
+    char opt;
+    string pas;
+    int role;
 
-void admin::view_record() {
-    string line;
-    ifstream fin("admin_login.txt");
-    while (getline(fin, line)) {
-        cout << line << endl;
-    }
-    fin.close();
-}
+    do {
+        system("cls");
+        cout << "Press 2 to login as a teacher" << endl;
+        cout << "Option: ";
+        cin >> role;
 
-void admin::add_std() {
-    ofstream fout("practice.txt", ios::app);
-    cout << "Enter roll number: "; cin >> id;
-    cout << "Enter name: "; cin >> name;
-    cout << "Enter section: "; string semester; cin >> semester;
-    cout << "Enter score: "; int score; cin >> score;
-
-    fout << left << setw(2) << id << "|" << setw(7) << name << "|"
-         << setw(8) << semester << "|" << setw(6) << score << "|" << endl;
-    fout.close();
-}
-
-void admin::edit_std() {
-    cout << "Enter roll number to edit: "; cin >> id;
-    ifstream fin("practice.txt");
-    ofstream fout("temp.txt");
-    string line, roll;
-
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        getline(iss, roll, '|');
-        if (roll == id) {
-            cout << "Enter new roll number: "; cin >> id;
-            cout << "Enter new name: "; cin >> name;
-            cout << "Enter new section: "; string semester; cin >> semester;
-            cout << "Enter new score: "; int score; cin >> score;
-            fout << left << setw(2) << id << "|" << setw(7) << name << "|"
-                 << setw(8) << semester << "|" << setw(6) << score << "|" << endl;
-        } else {
-            fout << line << endl;
+        if (role == 2) {
+            teacher t;
+            cin.ignore();
+            cout << "Enter your name: ";
+            cin >> p.name;
+            cout << "Enter your password: ";
+            cin >> pas;
+            t.teacher_login(p.name, pas);
         }
-    }
-
-    fin.close();
-    fout.close();
-    remove("practice.txt");
-    rename("temp.txt", "practice.txt");
-}
-
-void admin::del_std() {
-    cout << "Enter ID to delete: "; cin >> id;
-    ifstream fin("practice.txt");
-    ofstream fout("temp.txt");
-    string line, roll;
-
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        getline(iss, roll, '|');
-        if (roll != id) {
-            fout << line << endl;
+        else {
+            cout << "!! Invalid option !!" << endl;
         }
-    }
+        cout << "Press y to continue: ";
+        cin >> opt;
+    } while (opt == 'y' || opt == 'Y');
 
-    fin.close();
-    fout.close();
-    remove("practice.txt");
-    rename("temp.txt", "practice.txt");
+    system("pause");
 }
 
-void admin::add_tea() {
-    ofstream fout("teacher_record.txt", ios::app);
-    cout << "Enter ID: "; cin >> id;
-    cout << "Enter name: "; cin >> name;
-    cout << "Enter subject: "; cin >> subject;
-    cout << "Enter salary: "; cin >> salary;
-
-    fout << left << setw(2) << id << "|" << setw(8) << name << "|"
-         << setw(7) << subject << "|" << setw(7) << salary << "|" << endl;
-    fout.close();
-}
-
-void admin::edit_tea() {
-    cout << "Enter ID to edit: "; cin >> id;
-    ifstream fin("teacher_record.txt");
-    ofstream fout("temp.txt");
-    string line, roll;
-
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        getline(iss, roll, '|');
-        if (roll == id) {
-            cout << "Enter new ID: "; cin >> id;
-            cout << "Enter new name: "; cin >> name;
-            cout << "Enter new subject: "; cin >> subject;
-            cout << "Enter new salary: "; cin >> salary;
-            fout << left << setw(2) << id << "|" << setw(8) << name << "|"
-                 << setw(7) << subject << "|" << setw(7) << salary << "|" << endl;
-        } else {
-            fout << line << endl;
-        }
-    }
-
-    fin.close();
-    fout.close();
-    remove("teacher_record.txt");
-    rename("temp.txt", "teacher_record.txt");
-}
-
-void admin::del_tea() {
-    cout << "Enter ID to delete: "; cin >> id;
-    ifstream fin("teacher_record.txt");
-    ofstream fout("temp.txt");
-    string line, roll;
-
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        getline(iss, roll, '|');
-        if (roll != id) {
-            fout << line << endl;
-        }
-    }
-
-    fin.close();
-    fout.close();
-    remove("teacher_record.txt");
-    rename("temp.txt", "teacher_record.txt");
-}
-
-void admin::edit_timetable() {
-    string days, line, tem_line;
-    cin.ignore();
-    cout << "Enter day to edit (e.g. Mon): ";
-    getline(cin, days);
-
-    ifstream fin("timetable2.txt");
-    ofstream fout("temp1.txt");
-    string lac1, lac2, lac3, lac4;
-
-    while (getline(fin, line)) {
-        istringstream is(line);
-        getline(is, tem_line, '|');
-        if (days == tem_line) {
-            cout << "Enter lecture 1: "; cin >> lac1;
-            cout << "Enter lecture 2: "; cin >> lac2;
-            cout << "Enter lecture 3: "; cin >> lac3;
-            cout << "Enter lecture 4: "; cin >> lac4;
-
-            fout << left << setw(4) << tem_line << "|" << setw(4) << lac1 << "|"
-                 << setw(4) << lac2 << "|" << setw(4) << lac3 << "|" << setw(4) << lac4 << "|" << endl;
-        } else {
-            fout << line << endl;
-        }
-    }
-
-    fin.close();
-    fout.close();
-    remove("timetable2.txt");
-    rename("temp1.txt", "timetable2.txt");
-}
-
-void admin::admin_login(string name, string pass) {
-    ifstream fin("admin_login.txt");
+void teacher::teacher_login(string name, string pass) {
+    ifstream fin;
     string n, p, c;
+    fin.open("teacher-login.txt");
     bool flag = false;
 
     while (fin >> n >> c >> p) {
@@ -203,138 +68,119 @@ void admin::admin_login(string name, string pass) {
             break;
         }
     }
-
     fin.close();
+
     if (flag) {
-        acess_admin();
-    } else {
-        cout << "❌ Incorrect admin credentials!" << endl;
+        acess_teacher();
+    }
+    else {
+        cout << "!! Wrong username or password !!" << endl;
     }
 }
 
-void admin::acess_admin() {
-    int n;
-    char opt;
+void teacher::acess_teacher() {
+    char ch;
+    int opt;
+    teacher t;
+
     do {
         system("cls");
-        cout << "\n📋 Admin Menu\n";
-        cout << "1. Add Teacher\n";
-        cout << "2. Edit Teacher\n";
-        cout << "3. Delete Teacher\n";
-        cout << "4. Add Student\n";
-        cout << "5. Edit Student\n";
-        cout << "6. Delete Student\n";
-        cout << "7. Edit Timetable\n";
+        cout << "Press 1 to view student record" << endl;
+        cout << "Press 2 to view time table" << endl;
+        cout << "Press 3 to view attendance record" << endl;
+        cout << "Press 4 to take attendance" << endl;
+        cout << "Press 5 to create quiz" << endl;
         cout << "Choice: ";
-        cin >> n;
+        cin >> opt;
 
-        switch (n) {
-            case 1: add_tea(); break;
-            case 2: edit_tea(); break;
-            case 3: del_tea(); break;
-            case 4: add_std(); break;
-            case 5: edit_std(); break;
-            case 6: del_std(); break;
-            case 7: edit_timetable(); break;
-            default: cout << "❗ Invalid input\n"; break;
+        system("cls");
+        if (opt == 1) {
+            t.see_student_record();
+        }
+        else if (opt == 2) {
+            t.see_timetable();
+        }
+        else if (opt == 3) {
+            t.see_attendence();
+        }
+        else if (opt == 4) {
+            t.take_attendence();
+        }
+        else if (opt == 5) {
+            t.create_quiz();
+        }
+        else {
+            cout << "Invalid input" << endl;
         }
 
         cout << "Press y to continue: ";
-        cin >> opt;
-    } while (opt == 'y' || opt == 'Y');
+        cin >> ch;
+
+    } while (ch == 'y' || ch == 'Y');
 }
 
-// ───────────────────── Main Function ─────────────────────
+void teacher::take_attendence() {
+    int k;
+    ifstream finp("colindex.txt");
+    finp >> k;
+    finp.close();
 
-int main() {
-    system("color 71");
-    admin a;
-    string username, password;
-    char retry;
+    ofstream fiout("colindex.txt");
+    fiout << ++k;
+    fiout.close();
 
-    do {
-        system("cls");
-        cout << "🔐 Admin Login\n";
-        cout << "Enter username: ";
-        cin >> username;
-        cout << "Enter password: ";
-        cin >> password;
-        a.admin_login(username, password);
+    string a[10][k], line;
 
-        cout << "Try again? (y/n): ";
-        cin >> retry;
-    } while (retry == 'y' || retry == 'Y');
+    ifstream fin("attendence-practice.txt");
+    stringstream sep;
 
-    return 0;
-}
-class student: public person {
-    string password;
-public:
-    string semester;
-    float gpa;
-    int score;
-    student() {
-        id = "00";
-        semester = "unknown";
-        gpa = 0.0;
-        score = 0;
-    }
-    void set_student(int rn, string Name, string sem, float GPA, int Score) {
-        name = Name;
-        semester = sem;
-        gpa = GPA;
-        score = Score;
-        id = rn;
-    }
-    void pass(string pass) {
-        password = pass;
-    }
-    string get_pass() {
-        return password;
-    }
-    void view_record() override;
-    void std_login(string name, string pass);
-    void acess_std();
-};
+    for (int i = 0; i < 10; i++) {
+        getline(fin, line);
+        sep.clear();
+        sep.str(line);
 
-// Implementation
-void student::acess_std() {
-    person *std_ptr = new student();
-    int choice;
-    char opt;
-    do {
-        system("cls");
-        cout << "press 1 to see time table " << endl;
-        cout << "press 2 to see attendence record" << endl;
-        cout << "press 3 to solve quiz" << endl;
-        cout << "press 4 to see record " << endl;
-        cout << "choice :";
-        cin >> choice;
-        if (choice == 1) {
-            see_timetable();
-        } else if (choice == 2) {
-            see_attendence();
-        } else if (choice == 3) {
-            solve_quiz();
-        } else if (choice == 4) {
-            std_ptr->view_record();
-        } else {
-            cout << "wrong input try again " << endl;
+        for (int j = 0; j < k; j++) {
+            getline(sep, a[i][j], '|');
         }
-        cout << "\npress y to continue :";
-        cin >> opt;
-        if (opt != 'y' || opt != 'Y') {
-            break;
+    }
+    fin.close();
+
+    ofstream fout("attendence-practice.txt");
+    char aten;
+
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < k; j++) {
+            if (j > k - 2) {
+                cout << "Enter attendance of roll no " << a[i][1] << " (P/A): ";
+                cin >> aten;
+                if (aten == 'a' || aten == 'A' || aten == 'p' || aten == 'P') {
+                    a[i][j] = toupper(aten);
+                }
+                else {
+                    cout << "Wrong input, try again" << endl;
+                }
+            }
+            fout << a[i][j] << "|";
         }
-        system("cls");
-    } while (opt == 'y' || opt == 'Y');
-    delete std_ptr;
+        fout << endl;
+    }
+    fout.close();
+    system("cls");
 }
 
-void student::view_record() {
-    ifstream fin;
+void teacher::create_quiz() {
+    string pen;
+    int i, correct;
+    char complete;
+
+    ofstream cre("create.txt"), ans("ans.txt");
+    i = 0;
+
+    
+void person::see_student_record() {
+    ifstream fin("practice.txt");
     string line;
-    fin.open("practice.txt");
+
     while (getline(fin, line)) {
         cout << line << endl;
     }
@@ -342,17 +188,26 @@ void student::view_record() {
 }
 
 void person::see_timetable() {
-    cout << "\t\t" << endl;
-    cout << "\t\t" << endl;
-    cout << "\t\t\tTIME  TABLE:" << endl;
-    cout << "\t\t" << endl;
-    cout << "\t\t" << endl;
-    ifstream fin;
+    cout << "\n\n\t\t\tTIME TABLE:\n\n";
+
+    ifstream fin("timetable2.txt");
     string line;
-    fin.open("timetable2.txt");
+
     while (getline(fin, line)) {
-        cout << "\t\t";
-        cout << line << endl;
+        cout << "\t\t" << line << endl;
     }
     fin.close();
 }
+
+void person::see_attendence() {
+    ifstream fin("attendence-practice.txt");
+    string line;
+
+    while (getline(fin, line)) {
+        cout << line << endl;
+    }
+    fin.close();
+    
+    
+}
+    
