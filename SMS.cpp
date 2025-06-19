@@ -267,3 +267,92 @@ int main() {
 
     return 0;
 }
+class student: public person {
+    string password;
+public:
+    string semester;
+    float gpa;
+    int score;
+    student() {
+        id = "00";
+        semester = "unknown";
+        gpa = 0.0;
+        score = 0;
+    }
+    void set_student(int rn, string Name, string sem, float GPA, int Score) {
+        name = Name;
+        semester = sem;
+        gpa = GPA;
+        score = Score;
+        id = rn;
+    }
+    void pass(string pass) {
+        password = pass;
+    }
+    string get_pass() {
+        return password;
+    }
+    void view_record() override;
+    void std_login(string name, string pass);
+    void acess_std();
+};
+
+// Implementation
+void student::acess_std() {
+    person *std_ptr = new student();
+    int choice;
+    char opt;
+    do {
+        system("cls");
+        cout << "press 1 to see time table " << endl;
+        cout << "press 2 to see attendence record" << endl;
+        cout << "press 3 to solve quiz" << endl;
+        cout << "press 4 to see record " << endl;
+        cout << "choice :";
+        cin >> choice;
+        if (choice == 1) {
+            see_timetable();
+        } else if (choice == 2) {
+            see_attendence();
+        } else if (choice == 3) {
+            solve_quiz();
+        } else if (choice == 4) {
+            std_ptr->view_record();
+        } else {
+            cout << "wrong input try again " << endl;
+        }
+        cout << "\npress y to continue :";
+        cin >> opt;
+        if (opt != 'y' || opt != 'Y') {
+            break;
+        }
+        system("cls");
+    } while (opt == 'y' || opt == 'Y');
+    delete std_ptr;
+}
+
+void student::view_record() {
+    ifstream fin;
+    string line;
+    fin.open("practice.txt");
+    while (getline(fin, line)) {
+        cout << line << endl;
+    }
+    fin.close();
+}
+
+void person::see_timetable() {
+    cout << "\t\t" << endl;
+    cout << "\t\t" << endl;
+    cout << "\t\t\tTIME  TABLE:" << endl;
+    cout << "\t\t" << endl;
+    cout << "\t\t" << endl;
+    ifstream fin;
+    string line;
+    fin.open("timetable2.txt");
+    while (getline(fin, line)) {
+        cout << "\t\t";
+        cout << line << endl;
+    }
+    fin.close();
+}
