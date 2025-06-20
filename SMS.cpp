@@ -168,14 +168,6 @@ void teacher::take_attendence() {
     system("cls");
 }
 
-void teacher::create_quiz() {
-    string pen;
-    int i, correct;
-    char complete;
-
-    ofstream cre("create.txt"), ans("ans.txt");
-    i = 0;
-
     
 void person::see_student_record() {
     ifstream fin("practice.txt");
@@ -210,4 +202,97 @@ void person::see_attendence() {
     
     
 }
+void teacher::create_quiz(){
+            string  pen;
+		int  i,correct ;
+        char complete;
+			ofstream cre, ans ;
+			cre.open ("create.txt") ;
+			ans.open("ans.txt");
+			i = 0 ;
+			cout << "\n-------Create Quiz-------" << endl ;
+			cin.ignore();
+			do
+			{
+				cout << "Q" << i+1 << "." ;
+				getline(cin,pen) ;
+				cre << "Q" << i+1 << "." << pen << endl ;
+				
+				cout << "Option 1." ;
+				getline (cin,pen) ;			
+				cre << "1." << pen ;
+				
+				cout << "Option 2." ;
+				getline (cin,pen) ;
+				cre << "\t2." << pen ;
+				
+				cout << "Option 3." ;
+				getline (cin,pen) ;
+				cre << "\t3." << pen ;
+				
+				cout << "Option 4." ;
+				getline (cin,pen) ;
+				cre << "\t4." << pen << endl ;	
+				
+				cout << "Correct Option: " ;
+				cin>>correct;
+				ans<<correct<<endl;
+				cre << "Correct Option for Q" << i+1 << "." <<correct<< endl ;
+
+				i++ ;
+				cout << "Enter y to end quiz : " ;
+				cin>>complete;
+                cin.ignore();
+				cout << endl ;
+			}while(complete!='y');
+			cre.close();
+			ans.close();
+}
+void student::solve_quiz(){
+    string  pen, complete ;
+		int CorrectAns, i,UserOption,answer[20] ;
+        system ("cls") ;
+			int linesprint = 1 ;
+			CorrectAns = 0 ;
+			ifstream ifs,ans;
+			i = 0 ;
+			ifs.open ("create.txt") ;
+			ans.open("ans.txt");
+			while(ans>>answer[i]){
+            i++; 
+            cout<<answer[i]<<endl;
+			}
+			ans.close();
+			i=0;
+			cout<<"\n\n-------Quiz Started-------"<<endl;
+			while (getline (ifs,pen))
+			{
+				if (linesprint%3!=0)
+				{
+					cout << pen ;
+					cout << endl ;
+				}
+				else
+				{
+					cin.ignore();
+					cout << "\nEnter Correct Option : " ;
+					cin >> UserOption ;
+					
+					if (UserOption == answer[i])
+					{
+						CorrectAns++ ;
+					}
+					cout << endl ;
+					i++ ;
+				}
+				linesprint++ ;
+			}
+			ifs.close() ;
+            float avg ;
+			avg = (CorrectAns/(float)i) * 100 ;
+			cout << "\n\n-------Result-------" << endl ;
+			cout << "Your Total Score is " << CorrectAns <<" out  of " << i << endl ;
+			cout << "Average of Your Score is : " << avg << "%" << endl ;
+}
+
     
